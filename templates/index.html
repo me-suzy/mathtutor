@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Tutor Matematic Vocal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0c0d12;
+    --surface: #15161e;
+    --surface2: #1c1d28;
+    --border: #2a2b38;
+    --accent: #f0c040;
+    --accent2: #e8a020;
+    --text: #e8e6e1;
+    --text2: #9590a0;
+    --green: #40c080;
+    --red: #e04050;
+    --blue: #4080f0;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text2);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  /* INPUT SECTION */
+  .input-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .input-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .tab-btn:hover:not(.active) {
+    color: var(--text);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Text input */
+  .text-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    padding: 14px 18px;
+    resize: vertical;
+    min-height: 80px;
+  }
+  .text-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .text-input::placeholder { color: var(--text2); }
+
+  /* Image upload */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .upload-area:hover {
+    border-color: var(--accent);
+    background: rgba(240, 192, 64, 0.03);
+  }
+  .upload-area input[type=file] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .upload-text { color: var(--text2); font-size: 0.9rem; }
+
+  .preview-wrapper {
+    position: relative;
+    display: none;
+    margin-top: 16px;
+  }
+  .preview-img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 10px;
+    display: block;
+  }
+  .preview-clear {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--red);
+    background: rgba(0,0,0,0.75);
+    color: var(--red);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 2;
+  }
+  .preview-clear:hover {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* Camera */
+  .camera-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+  }
+  .camera-container video {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+  }
+  .camera-container canvas { display: none; }
+  .camera-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    justify-content: center;
+  }
+
+  /* Voice input */
+  .voice-area {
+    text-align: center;
+    padding: 30px;
+  }
+  .voice-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--red);
+    background: rgba(224, 64, 80, 0.1);
+    color: var(--red);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .voice-btn.recording {
+    background: var(--red);
+    color: #fff;
+    animation: pulse-red 1s infinite;
+  }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(224, 64, 80, 0.4); }
+    50% { box-shadow: 0 0 0 16px rgba(224, 64, 80, 0); }
+  }
+  .voice-status {
+    margin-top: 12px;
+    color: var(--text2);
+    font-size: 0.9rem;
+  }
+  .voice-result {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    color: var(--text);
+    display: none;
+  }
+
+  /* SOLVE BUTTON */
+  .solve-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .solve-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(240, 192, 64, 0.3); }
+  .solve-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    display: none;
+  }
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR */
+  .error-msg {
+    background: rgba(224, 64, 80, 0.1);
+    border: 1px solid rgba(224, 64, 80, 0.3);
+    border-radius: 10px;
+    padding: 16px;
+    color: var(--red);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* RESULTS SECTION */
+  .results-section {
+    display: none;
+  }
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .results-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .voice-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .ctrl-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  .speed-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+    color: var(--text2);
+  }
+  .speed-row input[type=range] {
+    width: 100px;
+    accent-color: var(--accent);
+  }
+  .speed-row select {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+  }
+
+  /* STEPS */
+  .step {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    transition: all 0.4s ease;
+    opacity: 0.45;
+  }
+  .step.active {
+    border-color: var(--accent);
+    opacity: 1;
+    background: var(--surface2);
+    box-shadow: 0 0 30px rgba(240, 192, 64, 0.06);
+  }
+  .step.done { opacity: 0.7; border-color: var(--green); }
+
+  .step-label {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .step-math {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .step-text {
+    font-size: 0.95rem;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  .new-problem-btn {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+  }
+  .new-problem-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Paste support visual */
+  .paste-hint {
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .main { padding: 16px 12px; }
+    .input-section { padding: 16px; }
+    .tab-btn { font-size: 0.8rem; padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🎓 Tutor Matematic Vocal</h1>
+    <div class="subtitle">Încarcă, scrie sau dictează o problemă → explicație vocală pas cu pas</div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- INPUT -->
+  <div class="input-section" id="inputSection">
+    <div class="input-tabs">
+      <button class="tab-btn active" onclick="switchTab('text')">✏️ Text</button>
+      <button class="tab-btn" onclick="switchTab('image')">📷 Imagine</button>
+      <button class="tab-btn" onclick="switchTab('camera')">📸 Cameră</button>
+      <button class="tab-btn" onclick="switchTab('voice')">🎤 Voce</button>
+    </div>
+
+    <!-- TEXT TAB -->
+    <div class="tab-content active" id="tab-text">
+      <textarea class="text-input" id="textInput"
+        placeholder="Scrie problema de matematică aici...&#10;Ex: Calculează ((3/4)^2)^5"></textarea>
+    </div>
+
+    <!-- IMAGE TAB -->
+    <div class="tab-content" id="tab-image">
+      <div class="upload-area" id="uploadArea">
+        <input type="file" accept="image/*" id="fileInput" onchange="handleFileUpload(this)">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">Click sau trage o imagine aici<br>Sau lipește cu Ctrl+V</div>
+      </div>
+      <div class="preview-wrapper" id="previewWrapper">
+        <button type="button" class="preview-clear" onclick="clearImage()" title="Șterge imaginea">✕</button>
+        <img class="preview-img" id="previewImg">
+      </div>
+      <p class="paste-hint">💡 Poți și face Ctrl+V (paste) direct pe pagină cu un screenshot</p>
+    </div>
+
+    <!-- CAMERA TAB -->
+    <div class="tab-content" id="tab-camera">
+      <div class="camera-container">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <canvas id="cameraCanvas"></canvas>
+      </div>
+      <div class="camera-btns">
+        <button class="ctrl-btn" onclick="startCamera()">📸 Pornește camera</button>
+        <button class="ctrl-btn" onclick="capturePhoto()">📷 Captură</button>
+        <button class="ctrl-btn" onclick="stopCamera()">⏹ Oprește</button>
+      </div>
+      <div class="preview-wrapper" id="cameraPreviewWrapper">
+        <button type="button" class="preview-clear" onclick="clearCameraImage()" title="Șterge fotografia">✕</button>
+        <img class="preview-img" id="cameraPreview">
+      </div>
+    </div>
+
+    <!-- VOICE TAB -->
+    <div class="tab-content" id="tab-voice">
+      <div class="voice-area">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceInput()">🎤</button>
+        <div class="voice-status" id="voiceStatus">Apasă pentru a dicta problema</div>
+        <div class="voice-result" id="voiceResult"></div>
+      </div>
+    </div>
+
+    <button class="solve-btn" id="solveBtn" onclick="solveProblem()">
+      🚀 Rezolvă și explică vocal
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div style="color: var(--text2)">Claude analizează problema...</div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <div class="results-title" id="resultsTitle">Rezolvare</div>
+      <div class="voice-controls">
+        <button class="ctrl-btn" id="btnPlayAll" onclick="playAll()">▶ Citește tot</button>
+        <button class="ctrl-btn" onclick="prevStep()">◀</button>
+        <button class="ctrl-btn" onclick="nextStep()">▶</button>
+        <button class="ctrl-btn" onclick="stopSpeech()">■ Stop</button>
+      </div>
+    </div>
+    <div class="speed-row">
+      <label>Voce:</label>
+      <select id="voiceSelect"></select>
+      <label>Viteză:</label>
+      <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="0.85">
+      <span id="speedLabel">0.85x</span>
+    </div>
+    <div id="stepsContainer"></div>
+    <button class="new-problem-btn" onclick="newProblem()">🔄 Problemă nouă</button>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let currentTab = 'text';
+let imageBase64 = null;
+let stepsData = [];
+let currentStepIndex = -1;
+let isSpeaking = false;
+let synth = window.speechSynthesis;
+let selectedVoice = null;
+let recognition = null;
+
+// ===== TABS =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['text','image','camera','voice'][i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+
+  // Anulează inputurile celorlalte taburi
+  if (tab !== currentTab) {
+    if (tab !== 'text') {
+      document.getElementById('textInput').value = '';
+    }
+    if (tab !== 'image') {
+      clearImage();
+    }
+    if (tab !== 'camera') {
+      clearCameraImage();
+    }
+    if (tab !== 'voice') {
+      document.getElementById('voiceResult').style.display = 'none';
+      document.getElementById('voiceResult').textContent = '';
+      if (recognition) { recognition.stop(); recognition = null; }
+    }
+  }
+
+  currentTab = tab;
+}
+
+// ===== FILE UPLOAD =====
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    imageBase64 = e.target.result;
+    document.getElementById('previewImg').src = imageBase64;
+    document.getElementById('previewWrapper').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  imageBase64 = null;
+  document.getElementById('previewImg').src = '';
+  document.getElementById('previewWrapper').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+}
+
+function clearCameraImage() {
+  imageBase64 = null;
+  document.getElementById('cameraPreview').src = '';
+  document.getElementById('cameraPreviewWrapper').style.display = 'none';
+}
+
+// ===== PASTE IMAGE (Ctrl+V) =====
+document.addEventListener('paste', (e) => {
+  const items = e.clipboardData.items;
+  for (let item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      const blob = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        imageBase64 = ev.target.result;
+        // Switch to image tab
+        switchTab('image');
+        document.getElementById('previewImg').src = imageBase64;
+        document.getElementById('previewWrapper').style.display = 'block';
+      };
+      reader.readAsDataURL(blob);
+      break;
+    }
+  }
+});
+
+// ===== CAMERA =====
+let cameraStream = null;
+
+async function startCamera() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+    document.getElementById('cameraVideo').srcObject = cameraStream;
+  } catch (e) {
+    alert('Nu am putut accesa camera: ' + e.message);
+  }
+}
+
+function capturePhoto() {
+  const video = document.getElementById('cameraVideo');
+  const canvas = document.getElementById('cameraCanvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  imageBase64 = canvas.toDataURL('image/jpeg', 0.85);
+  document.getElementById('cameraPreview').src = imageBase64;
+  document.getElementById('cameraPreviewWrapper').style.display = 'block';
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+}
+
+// ===== VOICE INPUT =====
+function toggleVoiceInput() {
+  const btn = document.getElementById('voiceBtn');
+  const status = document.getElementById('voiceStatus');
+
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    status.textContent = 'Browserul nu suportă recunoaștere vocală. Folosește Chrome.';
+    return;
+  }
+
+  if (recognition) {
+    recognition.stop();
+    recognition = null;
+    btn.classList.remove('recording');
+    status.textContent = 'Apasă pentru a dicta problema';
+    return;
+  }
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'ro-RO';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  btn.classList.add('recording');
+  status.textContent = '🔴 Ascult... vorbește acum';
+
+  recognition.onresult = (e) => {
+    let transcript = '';
+    for (let i = 0; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+    }
+    const result = document.getElementById('voiceResult');
+    result.style.display = 'block';
+    result.textContent = transcript;
+    document.getElementById('textInput').value = transcript;
+  };
+
+  recognition.onerror = (e) => {
+    status.textContent = 'Eroare: ' + e.error;
+    btn.classList.remove('recording');
+  };
+
+  recognition.onend = () => {
+    btn.classList.remove('recording');
+    status.textContent = 'Apasă pentru a dicta din nou';
+    recognition = null;
+  };
+
+  recognition.start();
+}
+
+// ===== SOLVE =====
+async function solveProblem() {
+  const btn = document.getElementById('solveBtn');
+  const loading = document.getElementById('loading');
+  const errorEl = document.getElementById('errorMsg');
+  const results = document.getElementById('resultsSection');
+
+  errorEl.style.display = 'none';
+  results.style.display = 'none';
+
+  // Trimite DOAR inputul din tabul activ
+  const formData = new FormData();
+  const text = document.getElementById('textInput').value.trim();
+  const fileInput = document.getElementById('fileInput');
+
+  if (currentTab === 'text') {
+    if (text) formData.append('text', text);
+  } else if (currentTab === 'image') {
+    if (imageBase64) formData.append('image_base64', imageBase64);
+    else if (fileInput.files[0]) formData.append('image', fileInput.files[0]);
+  } else if (currentTab === 'camera') {
+    if (imageBase64) formData.append('image_base64', imageBase64);
+  } else if (currentTab === 'voice') {
+    if (text) formData.append('text', text);
+  }
+
+  if (!formData.has('text') && !formData.has('image_base64') && !formData.has('image')) {
+    errorEl.textContent = 'Scrie o problemă, încarcă o imagine, sau dictează!';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  loading.style.display = 'block';
+
+  try {
+    const resp = await fetch('/solve', { method: 'POST', body: formData });
+    const data = await resp.json();
+
+    if (data.error) {
+      errorEl.textContent = data.error;
+      errorEl.style.display = 'block';
+      loading.style.display = 'none';
+      btn.disabled = false;
+      return;
+    }
+
+    stepsData = data.pasi;
+    document.getElementById('resultsTitle').textContent = data.titlu || 'Rezolvare';
+    renderSteps();
+    results.style.display = 'block';
+    loading.style.display = 'none';
+    btn.disabled = false;
+
+    // Auto-start voice
+    setTimeout(() => playAll(), 500);
+
+  } catch (e) {
+    errorEl.textContent = 'Eroare de conexiune: ' + e.message;
+    errorEl.style.display = 'block';
+    loading.style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+// ===== RENDER STEPS =====
+function renderSteps() {
+  const container = document.getElementById('stepsContainer');
+  container.innerHTML = '';
+  stepsData.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'step';
+    div.id = `step-${i}`;
+    div.onclick = () => { setActiveStep(i); speak(s.speech); };
+    div.innerHTML = `
+      <div class="step-label">${s.label}</div>
+      <div class="step-math">${(s.math || '').replace(/\n/g, '<br>')}</div>
+      <div class="step-text">${s.text}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function setActiveStep(index) {
+  stepsData.forEach((_, i) => {
+    const el = document.getElementById(`step-${i}`);
+    if (!el) return;
+    el.classList.remove('active', 'done');
+    if (i < index) el.classList.add('done');
+    if (i === index) el.classList.add('active');
+  });
+  currentStepIndex = index;
+  const el = document.getElementById(`step-${index}`);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ===== TTS =====
+function loadVoices() {
+  const select = document.getElementById('voiceSelect');
+  const voices = synth.getVoices();
+  select.innerHTML = '';
+
+  const ro = voices.filter(v => v.lang.startsWith('ro'));
+  const en = voices.filter(v => v.lang.startsWith('en'));
+  const rest = voices.filter(v => !v.lang.startsWith('ro') && !v.lang.startsWith('en'));
+
+  [...ro, ...en, ...rest].forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    const prefix = v.lang.startsWith('ro') ? '⭐ ' : '';
+    opt.textContent = `${prefix}${v.name} (${v.lang})`;
+    select.appendChild(opt);
+  });
+
+  if (ro.length > 0) {
+    selectedVoice = ro[0];
+    select.value = ro[0].name;
+  }
+}
+
+document.getElementById('voiceSelect').addEventListener('change', (e) => {
+  selectedVoice = synth.getVoices().find(v => v.name === e.target.value);
+});
+synth.onvoiceschanged = loadVoices;
+loadVoices();
+
+document.getElementById('speedRange').addEventListener('input', (e) => {
+  document.getElementById('speedLabel').textContent = e.target.value + 'x';
+});
+
+function speak(text) {
+  return new Promise((resolve) => {
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = parseFloat(document.getElementById('speedRange').value);
+    utter.pitch = 1.0;
+    if (selectedVoice) utter.voice = selectedVoice;
+    utter.lang = selectedVoice?.lang?.startsWith('ro') ? 'ro-RO' : (selectedVoice?.lang || 'ro-RO');
+    utter.onend = () => resolve();
+    utter.onerror = () => resolve();
+    synth.speak(utter);
+  });
+}
+
+async function playAll() {
+  if (isSpeaking) return;
+  isSpeaking = true;
+  document.getElementById('btnPlayAll').classList.add('active');
+
+  for (let i = 0; i < stepsData.length; i++) {
+    if (!isSpeaking) break;
+    setActiveStep(i);
+    await speak(stepsData[i].speech);
+    if (!isSpeaking) break;
+    await new Promise(r => setTimeout(r, 400));
+  }
+
+  isSpeaking = false;
+  document.getElementById('btnPlayAll').classList.remove('active');
+}
+
+function stopSpeech() {
+  isSpeaking = false;
+  synth.cancel();
+  document.getElementById('btnPlayAll').classList.remove('active');
+}
+
+function nextStep() {
+  const next = Math.min((currentStepIndex < 0 ? 0 : currentStepIndex) + 1, stepsData.length - 1);
+  setActiveStep(next);
+  speak(stepsData[next].speech);
+}
+
+function prevStep() {
+  const prev = Math.max(currentStepIndex - 1, 0);
+  setActiveStep(prev);
+  speak(stepsData[prev].speech);
+}
+
+// ===== NEW PROBLEM =====
+function newProblem() {
+  stopSpeech();
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('textInput').value = '';
+  imageBase64 = null;
+  document.getElementById('previewWrapper').style.display = 'none';
+  document.getElementById('previewImg').src = '';
+  document.getElementById('cameraPreviewWrapper').style.display = 'none';
+  document.getElementById('cameraPreview').src = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('voiceResult').style.display = 'none';
+  document.getElementById('voiceResult').textContent = '';
+  stepsData = [];
+  currentStepIndex = -1;
+  switchTab('text');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
